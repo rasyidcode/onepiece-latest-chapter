@@ -1,5 +1,5 @@
-export default function Home() {
+export default async function Home() {
   return (
-   <h1>One Piece Latest Manga</h1> 
+    <h1>One Piece Latest Manga</h1>
   );
 }
