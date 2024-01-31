@@ -1,60 +1,26 @@
 import puppeteer from "puppeteer";
 
-type Manga = {
-    title: string | null,
-    images: {
-        alt: string | null,
-        src: string | null
-    }[]
-}
+export async function getChapterImageURLs(): Promise<string[]|null> {
+    try {
+        const browser = await puppeteer.launch({ headless: 'new', args: ['--no-sandbox'] });
+        const page = await browser.newPage();
 
-export async function getLastChapter() {
-    const browser = await puppeteer.launch({ headless: 'new', args: ['--no-sandbox'] });
-    const page = await browser.newPage();
+        page.on('console', msg => console.log('PAGE LOG:', msg.text()));
 
-    // Set screen size
-    await page.setViewport({ width: 1080, height: 1024 });
+        await page.goto('https://tcbscans.com');
 
-    // Navigate the page to a URL
-    await page.goto('https://tcbscans.com/');
+        await page.waitForSelector('text/One Piece');
+        await page.click('text/One Piece');
 
-    // home
-    await Promise.all([
-        page.waitForNavigation(),
-        page.click('a[href="/projects"]')
-    ]);
+        await page.waitForSelector('picture.fixed-ratio img.fixed-ratio-content');
+        const images = await page.$$eval('picture.fixed-ratio > img.fixed-ratio-content', im => im.map(m => m.getAttribute('src') as string));
 
-    // projects
-    await Promise.all([
-        page.waitForNavigation(),
-        page.click('text/One Piece')
-    ]);
+        await page.evaluate(() => console.log('url is ' + location.href));
 
-    // list chapters
-    await Promise.all([
-        page.waitForNavigation(),
-        page.click('a.block.border.border-border.bg-card.mb-3.p-3.rounded')
-    ]);
+        await browser.close();
 
-    let title = null;
-
-    // reading
-    const titleEl = await page.waitForSelector('text/One Piece');
-    if (titleEl != null) {
-        title = await titleEl.evaluate(el => el.textContent);
-
+        return images;
+    } catch(e: unknown) {
+        return null;
     }
-    const images = await page.$$eval('picture.fixed-ratio img.fixed-ratio-content', im => im.map(m => {
-        return {
-            alt: m.getAttribute('alt'),
-            src: m.getAttribute('src'),
-        }
-    }));
-
-    await browser.close();
-
-    return {
-        title: title,
-        images: images
-    } satisfies Manga
 }
