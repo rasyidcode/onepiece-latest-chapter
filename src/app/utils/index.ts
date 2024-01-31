@@ -2,17 +2,12 @@ import Chromium from "@sparticuz/chromium";
 import puppeteer, { Browser } from "puppeteer-core";
 
 export async function getChapterImageURLs(): Promise<string[]> {
-    let browser: Browser
-    if (process.env.NODE_ENV !== 'development') {
-        browser = await puppeteer.launch({
-            args: Chromium.args,
-            defaultViewport: Chromium.defaultViewport,
-            executablePath: await Chromium.executablePath(),
-            headless: Chromium.headless,
-        });
-    } else {
-        browser = await puppeteer.launch({ headless: 'new' });
-    }
+    let browser: Browser = await puppeteer.launch({
+        args: Chromium.args,
+        defaultViewport: Chromium.defaultViewport,
+        executablePath: await Chromium.executablePath(),
+        headless: Chromium.headless,
+    });
 
     const page = await browser.newPage();
 
