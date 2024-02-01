@@ -1,4 +1,4 @@
-import { getChapterImageURLs } from "@/app/utils";
+import { getChapterImageURLs } from "@/utils";
 import { PutBlobResult, list, put } from "@vercel/blob";
 
 export const revalidate = 0;
