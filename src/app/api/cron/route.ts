@@ -1,6 +1,8 @@
 import { getChapterImageURLs } from "@/app/utils";
 import { PutBlobResult, list, put } from "@vercel/blob";
 
+export const revalidate = 0;
+
 export async function GET() {
     try {
         const imageurls = await getChapterImageURLs();
